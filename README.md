@@ -32,7 +32,7 @@ Run tests using
 go test -v
 ```  
 
-This package uses [Gin](https://github.com/codegangsta/gin) for automatic server reload for any file changes. To run the server,
+This package uses [Gin](https://github.com/codegangsta/gin) for automatic server reloading on any file changes. To run the server,
 ```
 gin run server.go
 ```
