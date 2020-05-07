@@ -55,6 +55,13 @@ For example, in `routes.go`
 },
 ```  
 
+### Environment variables  
+There are only 2 environment variables used by default,
+```
+PORT=<port-server-listens-on> // defaults to 3001
+STATIC=<static-file-directory> // defaults to /static
+```  
+
 ### Contributing  
 Read the [CONTRIBUTING](CONTRIBUTING.md) guide for information.  
 
