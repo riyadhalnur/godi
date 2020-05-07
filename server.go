@@ -41,7 +41,7 @@ func main() {
 	}()
 
 	c := make(chan os.Signal, 1)
-	// listen for terminate signals from the OS
+	// listen for termination signals from the OS
 	signal.Notify(c, syscall.SIGTERM, syscall.SIGINT)
 
 	<-c
