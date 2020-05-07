@@ -1,4 +1,6 @@
 # simple-go-server
+![Go](https://github.com/riyadhalnur/simple-go-server/workflows/Go/badge.svg?branch=master)  
+
 > Simple but highly opinionated Go server template
 
 ### Requirements  
