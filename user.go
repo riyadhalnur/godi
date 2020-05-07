@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -18,7 +17,6 @@ type User struct {
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	pathVars := mux.Vars(r)
-	log.Println(pathVars)
 	if pathVars["id"] != "" {
 		user, _ := json.Marshal(User{
 			ID:    pathVars["id"],
@@ -66,9 +64,12 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user.ID = "2"
+	userJSON, _ := json.Marshal(user)
+
 	utils.RespondJSON(w, &utils.Response{
-		StatusCode: http.StatusAccepted,
-		Body:       body,
+		StatusCode: http.StatusOK,
+		Body:       userJSON,
 	})
 
 	return
