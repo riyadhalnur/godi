@@ -85,6 +85,17 @@ func (s *Server) Listen() error {
 	return nil
 }
 
+// AddRoutes appends the list of routes to mount
+func (s *Server) AddRoutes(routes ...util.Route) {
+	s.routers = append(s.routers, routes...)
+}
+
+// AddMiddlewares appends the middleware(s) to mount
+// Middlewares should be ordered according to their functionality
+func (s *Server) AddMiddlewares(middleware ...mux.MiddlewareFunc) {
+	s.middlewares = append(s.middlewares, middleware...)
+}
+
 func (s *Server) handleHTTP(handler util.APIHandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// reuse context attached to request and pass in to handler
@@ -122,14 +133,15 @@ func (s *Server) mountRoutes() *mux.Router {
 	// order matters for middleware
 	router.Use(middleware.RequestID)
 
+	// mount the health enpoint. useful for Kubernetes integration
+	router.Name("health").Path("/healthz").HandlerFunc(s.handleHTTP(healthCheckHandler)).Methods(http.MethodGet)
+
 	// mount middlewares
 	for _, mw := range s.middlewares {
 		router.Use(mw)
 	}
 
-	// mount the health enpoint. useful for Kubernetes integration
-	router.Name("health").Path("/healthz").HandlerFunc(s.handleHTTP(healthCheckHandler)).Methods(http.MethodGet)
-
+	// mount routes
 	for _, route := range s.routers {
 		router.Name(route.Name).Path(route.Path).HandlerFunc(s.handleHTTP(route.Handler)).Methods(route.Method)
 	}
