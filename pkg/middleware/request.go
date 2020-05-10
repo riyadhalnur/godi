@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/simple-go-server/pkg/server/util"
+	"github.com/godi/pkg/server/util"
 
 	"github.com/gofrs/uuid"
 )
