@@ -26,18 +26,25 @@ var (
 	listenPort = "3000"
 )
 
+// Server holds the configurations,
+// routes, and the middlewares
+// to mount when an instance of Server starts
 type Server struct {
 	config      *Config
 	routers     []util.Route
 	middlewares []mux.MiddlewareFunc
 }
 
+// NewServer returns a new instance of Server
+// with passed in configation
 func NewServer(cfg *Config) *Server {
 	return &Server{
 		config: cfg,
 	}
 }
 
+// Listen will handle incoming HTTP requests
+// Blocks until an interrupt is received
 func (s *Server) Listen() error {
 	if s.config.Timeout == 0 {
 		return errors.New("timeout configuration is a required value")
@@ -114,7 +121,11 @@ func (s *Server) mountRoutes() *mux.Router {
 	// attach default middlewares
 	// order matters for middleware
 	router.Use(middleware.RequestID)
-	router.Use(middleware.Logging)
+
+	// mount middlewares
+	for _, mw := range s.middlewares {
+		router.Use(mw)
+	}
 
 	// mount the health enpoint. useful for Kubernetes integration
 	router.Name("health").Path("/healthz").HandlerFunc(s.handleHTTP(healthCheckHandler)).Methods(http.MethodGet)
