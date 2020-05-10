@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/simple-go-server/pkg/server/util"
+
 	"github.com/gofrs/uuid"
 )
 
@@ -14,7 +16,7 @@ func RequestID(next http.Handler) http.Handler {
 		requestID, _ := uuid.NewV4()
 
 		ctx := r.Context()
-		ctx = context.WithValue(r.Context(), "RequestID", requestID.String())
+		ctx = context.WithValue(r.Context(), util.RequestIDKey, requestID.String())
 
 		w.Header().Set("X-Request-ID", requestID.String())
 		next.ServeHTTP(w, r.WithContext(ctx))

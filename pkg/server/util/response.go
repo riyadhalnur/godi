@@ -21,6 +21,8 @@ func RespondJSON(w http.ResponseWriter, response *Response) {
 	w.Write([]byte(response.Body))
 }
 
+// ErrorJSON returns a common JSON formed error response
+// for http requests
 func ErrorJSON(w http.ResponseWriter, err *ErrorResponse) {
 	w.Header().Set("Content-Type", "application/json")
 
