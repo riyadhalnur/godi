@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/simple-go-server/pkg/server"
+	"github.com/godi/pkg/server"
 )
 
 var (

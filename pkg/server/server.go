@@ -12,8 +12,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/simple-go-server/pkg/middleware"
-	"github.com/simple-go-server/pkg/server/util"
+	"github.com/godi/pkg/middleware"
+	"github.com/godi/pkg/server/util"
 
 	"github.com/gorilla/mux"
 )
@@ -102,7 +102,12 @@ func (s *Server) handleHTTP(handler util.APIHandlerFunc) http.HandlerFunc {
 		ctx := r.Context()
 		params := mux.Vars(r)
 
-		res, err := handler(ctx, &util.Request{params, r})
+		req := &util.Request{
+			PathParameters: params,
+			Request:        r,
+		}
+
+		res, err := handler(ctx, req)
 		if err != nil {
 			util.ErrorJSON(w, &util.ErrorResponse{
 				Code:    http.StatusInternalServerError,
