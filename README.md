@@ -65,7 +65,7 @@ srv := &Server{}
 srv.AddMiddlewares(middleware.MyMiddlewareFunc)
 ...
 ``` 
-*P.S.* Middleware order matters. You can also use any middleware that implements the basic middleware   
+*P.S.* Middleware order matters. You can also use any middleware that matches the `http.HandlerFunc` signature     
 
 **Services**  
 To add and register a service, create a new folder under `pkg/service`. Export the list of routes it will use and then register them with the server instance.    
