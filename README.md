@@ -57,6 +57,20 @@ go build -o <binary-name>
 ### Healthcheck
 The server package exposes a health endpoint by default at `/healthz`. This is compatible with Kubernetes integration.  
 
+### Logging
+The logger package is modeled after the standard `log` package in Go to expose a global logger that is configured to use for a uniform logging experience across the application. It wraps around `zap` with custom configuration that plays nice with Docker, Kubernetes and Stackdriver.  
+
+Methods not ending with `f` are aliases for `zap.<level>w` methods that accept loosely typed key-value pairs, e.g.  
+```go
+logger.Info("Failed to fetch URL.",
+    "url", url,
+)
+```  
+
+If `DEBUG` mode is `true` in the environment, debug level messages are logged to `stdout`. Otherwise, everything less than error level but not debug level is routed to `stdout`. The benefits of this are being able to turn on debug mode without having to redeploy your application. Just a simple restart will do.    
+
+Errors and anything above are routed to `stderr` by default.  
+
 ### Adding new services and middlewares
 **Middlewares**  
 By default, the default server will mount a request ID middleware that adds an `X-Request-ID` header to all requests. To define new middlewares, define it inside `pkg/middleware` and then mount/register it with the server instance,  

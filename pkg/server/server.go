@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"syscall"
 	"time"
+
+	"github.com/godi/pkg/logger"
 
 	"github.com/godi/pkg/middleware"
 	"github.com/godi/pkg/server/util"
@@ -64,7 +65,7 @@ func (s *Server) Listen() error {
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
-			log.Fatalln(err)
+			logger.Fatalf("Unable to start server err=%v", err.Error())
 		}
 	}()
 
@@ -126,7 +127,7 @@ func (s *Server) mountRoutes() *mux.Router {
 	if s.config.StaticDir != "" {
 		staticAbsPath, err := filepath.Abs(s.config.StaticDir)
 		if err != nil {
-			log.Fatalln(err)
+			logger.Errorf("Unable to mount static directory err=%v", err.Error())
 		}
 
 		// serve static files at /static path from /static folder unless specified otherwise

@@ -1,19 +1,13 @@
 package server
 
-// Config holds the required configurations
-// to pass into a server instance
+// Config specifies the parameters
+// that can be passed in to a Server instance
+//
+// Port - tcp port the server will listen on. Defaults to 3000
+// Timeout (required) - the write/read/idle timeout in seconds
+// StaticDir - the server from static files will be served
 type Config struct {
-	// Port to listen on. Defaults to 3000
-	Port string
-
-	// Timeout (required) for write/read/idle in seconds
-	Timeout int
-
-	// Static path to the directory
-	// from which to server static files
-	// Leave blank to disable
+	Port      string
+	Timeout   int
 	StaticDir string
-
-	// Debug turn on debug mode
-	Debug bool
 }
