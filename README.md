@@ -17,6 +17,9 @@
 |-- go.mod
 |-- go.sum
 |-- pkg
+|   |-- logger
+|   |   |-- logger.go
+|   |   `-- logger_test.go
 |   |-- middleware
 |   |   |-- request.go
 |   |   `-- request_test.go
