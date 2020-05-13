@@ -39,4 +39,5 @@ jobs:
 
     - name: Gitleaks
       uses: zricethezav/gitleaks-action@v1.1.2
+      if: {{ matrix.os == 'ubuntu-latest' }}
 
