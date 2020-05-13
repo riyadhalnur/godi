@@ -32,10 +32,10 @@ jobs:
         go get -v -t -d ./...
 
     - name: Test
-      run: go test -v -cover -coverprofile=coverage.out ./...
+      run: make test
 
     - name: Coverage
-      run: go tool cover -func=coverage.out
+      run: make coverage
 
     - name: Gitleaks
       uses: zricethezav/gitleaks-action@v1.1.2

@@ -44,17 +44,17 @@
 ### Developing  
 Run tests using
 ```
-go test -v ./...
+make test
 ```  
 
 To run the server, in `cmd/api/`,
 ```
-go run main.go
+make run
 ```
 
 Build a binary in `cmd/api` using  
 ```
-go build -o <binary-name>
+make build
 ```  
 
 ### Healthcheck
@@ -85,7 +85,7 @@ srv.AddMiddlewares(middleware.MyMiddlewareFunc)
 *P.S.* Middleware order matters. You can also use any middleware that matches the `http.HandlerFunc` signature     
 
 **Services**  
-To add and register a service, create a new folder under `pkg/service`. Export the list of routes it will use and then register them with the server instance.    
+To add and register a service, create a new folder under `pkg/service/<service-name>`. Make sure to export the list of routes it will use and then register them with the server instance to mount them when it starts up.    
 ```go
 // in pkg/service/user/routes.go
 Routes := []util.Route{
@@ -102,6 +102,9 @@ srv := &Server{}
 srv.AddRoutes(user.Routes...)
 ...
 ```  
+
+### Static files  
+The boilerplate comes with a basic HTML page and a rudimentary stylesheet inside the `/static` folder. By default, the server will not serve any static files. You have to explicitly pass in the path to the folder when configuring the server instance. The static files though are always served at the `/static` path of the listening server.  
 
 ### Environment variables  
 Environment variables are never read by the `pkg/server` package; it uses the `Configuration` struct passed in. Use environment variables when implementing it. Refer to `cmd/api/main.go` for usage.  
