@@ -58,7 +58,7 @@ make build
 ```  
 
 ### Healthcheck
-The server package exposes a health endpoint by default at `/healthz`. This is compatible with Kubernetes integration.  
+The server package exposes a health endpoint by default at `/health`. This is compatible with Kubernetes integration.  
 
 ### Logging
 The logger package is modeled after the standard `log` package in Go to expose a global logger that is configured to use for a uniform logging experience across the application. It wraps around `zap` with custom configuration that plays nice with Docker, Kubernetes and Stackdriver.  

@@ -86,6 +86,11 @@ func (s *Server) Listen() error {
 	return nil
 }
 
+// Close shutdowns the server immediately
+func (s *Server) Close() error {
+	return s.Close()
+}
+
 // AddRoutes appends the list of routes to mount
 func (s *Server) AddRoutes(routes ...util.Route) {
 	s.routers = append(s.routers, routes...)
@@ -140,7 +145,7 @@ func (s *Server) mountRoutes() *mux.Router {
 	router.Use(middleware.RequestID)
 
 	// mount the health enpoint. useful for Kubernetes integration
-	router.Name("health").Path("/healthz").HandlerFunc(s.handleHTTP(healthCheckHandler)).Methods(http.MethodGet)
+	router.Name("health").Path("/health").HandlerFunc(s.handleHTTP(healthCheckHandler)).Methods(http.MethodGet)
 
 	// mount middlewares
 	for _, mw := range s.middlewares {

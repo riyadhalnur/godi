@@ -51,7 +51,7 @@ func TestHealthCheck(t *testing.T) {
 	}
 	router := srv.mountRoutes()
 
-	req, err := http.NewRequest(http.MethodGet, "/healthz", nil)
+	req, err := http.NewRequest(http.MethodGet, "/health", nil)
 	if err != nil {
 		assert.Nil(t, err)
 	}
