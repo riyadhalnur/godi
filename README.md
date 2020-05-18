@@ -17,6 +17,11 @@
 |-- go.mod
 |-- go.sum
 |-- pkg
+|   |-- godierr
+|   |   |-- error.go
+|   |   |-- error_test.go
+|   |   |-- sentinel.go
+|   |   `-- sentinel_test.go
 |   |-- logger
 |   |   |-- logger.go
 |   |   `-- logger_test.go
