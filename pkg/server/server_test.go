@@ -100,7 +100,7 @@ func TestServerResponse(t *testing.T) {
 		body, _ := ioutil.ReadAll(rr.Body)
 
 		assert.Equal(t, http.StatusInternalServerError, rr.Code)
-		assert.JSONEq(t, `{"code":500,"message":"something went wrong in handler"}`, string(body))
+		assert.JSONEq(t, `{"code":500}`, string(body))
 	})
 
 	t.Run("request error", func(t *testing.T) {

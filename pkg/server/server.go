@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -10,6 +9,8 @@ import (
 	"path/filepath"
 	"syscall"
 	"time"
+
+	"github.com/godi/pkg/godierr"
 
 	"github.com/godi/pkg/logger"
 
@@ -48,7 +49,7 @@ func NewServer(cfg *Config) *Server {
 // Blocks until an interrupt is received
 func (s *Server) Listen() error {
 	if s.config.Timeout == 0 {
-		return errors.New("timeout configuration is a required value")
+		return godierr.RequiredArgsError("timeout")
 	}
 
 	if s.config.Port != "" {
@@ -64,6 +65,7 @@ func (s *Server) Listen() error {
 	}
 
 	go func() {
+		logger.Infof("Server listening on port %s", listenPort)
 		if err := srv.ListenAndServe(); err != nil {
 			logger.Fatalf("Unable to start server err=%v", err.Error())
 		}
@@ -74,12 +76,15 @@ func (s *Server) Listen() error {
 
 	<-quit
 
+	logger.Debugf("Interrupt received. Starting shutdown")
+
 	// wait for active connections to finish their jobs
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(s.config.Timeout)*time.Second)
 	defer cancel()
 
 	srv.SetKeepAlivesEnabled(false)
 	if err := srv.Shutdown(ctx); err != nil {
+		logger.Debugf("Could not shutdown server gracefully err=%v", err)
 		return err
 	}
 
@@ -104,6 +109,7 @@ func (s *Server) AddMiddlewares(middleware ...mux.MiddlewareFunc) {
 
 func (s *Server) handleHTTP(handler util.APIHandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
 		// reuse context attached to request and pass in to handler
 		ctx := r.Context()
 		params := mux.Vars(r)
@@ -113,14 +119,70 @@ func (s *Server) handleHTTP(handler util.APIHandlerFunc) http.HandlerFunc {
 			Request:        r,
 		}
 
+		logger.Info("Incoming HTTP request",
+			"method",
+			req.Method,
+			"path",
+			req.URL.Path,
+			"query",
+			req.URL.RawQuery,
+			"requestId",
+			ctx.Value(util.RequestIDKey).(string),
+			"ip",
+			req.RemoteAddr,
+		)
+
 		res, err := handler(ctx, req)
 		if err != nil {
+			if godiErr, ok := err.(*godierr.Error); ok {
+				logger.Error("HTTP handler returned an error",
+					"code",
+					godiErr.Code(),
+					"type",
+					godiErr.Type(),
+					"error",
+					godiErr.Error(),
+					"requestId",
+					ctx.Value(util.RequestIDKey).(string),
+					"latency",
+					time.Since(start).String(),
+				)
+
+				util.ErrorJSON(w, &util.ErrorResponse{
+					Code:    http.StatusInternalServerError,
+					Type:    godiErr.Type(),
+					Message: godiErr.Message(),
+				})
+				return
+			}
+
+			logger.Error("HTTP handler returned an error",
+				"error",
+				err.Error(),
+				"requestId",
+				ctx.Value(util.RequestIDKey).(string),
+				"latency",
+				time.Since(start).String(),
+			)
+
 			util.ErrorJSON(w, &util.ErrorResponse{
-				Code:    http.StatusInternalServerError,
-				Message: err.Error(),
+				Code: http.StatusInternalServerError,
 			})
 			return
 		}
+
+		logger.Info("Handled HTTP request",
+			"method",
+			req.Method,
+			"path",
+			req.URL.Path,
+			"status",
+			res.StatusCode,
+			"requestId",
+			ctx.Value(util.RequestIDKey).(string),
+			"latency",
+			time.Since(start).String(),
+		)
 
 		util.RespondJSON(w, res)
 	}
@@ -132,28 +194,26 @@ func (s *Server) mountRoutes() *mux.Router {
 	if s.config.StaticDir != "" {
 		staticAbsPath, err := filepath.Abs(s.config.StaticDir)
 		if err != nil {
-			logger.Errorf("Unable to mount static directory err=%v", err.Error())
+			logger.Errorf("Unable to read absolute path to static directory err=%v", err.Error())
 		}
 
-		// serve static files at /static path from /static folder unless specified otherwise
+		// serve static files at /static path
 		fs := http.FileServer(http.Dir(staticAbsPath))
 		router.PathPrefix(staticPathPrefix).Handler(http.StripPrefix(staticPathPrefix, fs))
 	}
 
-	// attach default middlewares
-	// order matters for middleware
 	router.Use(middleware.RequestID)
 
 	// mount the health enpoint. useful for Kubernetes integration
 	router.Name("health").Path("/health").HandlerFunc(s.handleHTTP(healthCheckHandler)).Methods(http.MethodGet)
 
-	// mount middlewares
+	logger.Debug("Mounting middlewares")
 	for _, mw := range s.middlewares {
 		router.Use(mw)
 	}
 
-	// mount routes
 	for _, route := range s.routers {
+		logger.Debug("Mounting route", "name", route.Name, "path", route.Path, "method", route.Method)
 		router.Name(route.Name).Path(route.Path).HandlerFunc(s.handleHTTP(route.Handler)).Methods(route.Method)
 	}
 
