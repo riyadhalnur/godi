@@ -24,10 +24,6 @@ const (
 	staticPathPrefix string = "/static"
 )
 
-var (
-	listenPort = "3000"
-)
-
 // Server holds the configurations,
 // routes, and the middlewares
 // to mount when an instance of Server starts
@@ -52,10 +48,11 @@ func (s *Server) Listen() error {
 		return godierr.RequiredArgsError("timeout")
 	}
 
-	if s.config.Port != "" {
-		listenPort = s.config.Port
+	if s.config.Port == "" {
+		return godierr.RequiredArgsError("port")
 	}
 
+	listenPort := s.config.Port
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%s", listenPort),
 		WriteTimeout: time.Duration(s.config.Timeout) * time.Second,

@@ -179,3 +179,23 @@ func TestServerResponse(t *testing.T) {
 		assert.Equal(t, http.StatusMovedPermanently, res.StatusCode)
 	})
 }
+
+func TestServerRequiredArgs(t *testing.T) {
+	srv := Server{
+		config: &Config{},
+	}
+
+	err := srv.Listen()
+	assert.NotNil(t, err)
+	assert.Contains(t, err.Error(), "missing required argument(s): timeout")
+
+	srv = Server{
+		config: &Config{
+			Timeout: 30,
+		},
+	}
+
+	err = srv.Listen()
+	assert.NotNil(t, err)
+	assert.Contains(t, err.Error(), "missing required argument(s): port")
+}
