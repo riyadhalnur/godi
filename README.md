@@ -6,7 +6,8 @@
 
 ### Requirements  
 1. [Go](https://golang.org) >= 1.13  
-2. Direnv (optional)  
+2. Docker (optional)  
+3. Direnv (optional)  
 
 ### Structure
 ```
@@ -60,6 +61,11 @@ make run
 Build a binary in `cmd/api` using  
 ```
 make build
+```  
+
+Build a Docker image  
+```  
+docker build -t godi .  
 ```  
 
 ### Healthcheck
