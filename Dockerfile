@@ -7,7 +7,7 @@ ENV GOOS=linux
 ENV GOARCH=amd64
 
 RUN mkdir /build
-ADD . /build/
+COPY . /build/
 WORKDIR /build
 
 # download dependencies
