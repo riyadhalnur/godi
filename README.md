@@ -7,7 +7,9 @@
 ### Requirements  
 1. [Go](https://golang.org) >= 1.13  
 2. Docker (optional)  
-3. Direnv (optional)  
+3. Kubernetes (optional)  
+4. Kustomize (optional)  
+5. Direnv (optional)  
 
 ### Structure
 ```
@@ -15,8 +17,19 @@
 |-- cmd
 |   `-- api
 |       `-- main.go
+|-- deploy
+|   |-- base
+|   |   |-- deployment.yml
+|   |   |-- kustomization.yml
+|   |   `-- service.yml
+|   `-- overlays
+|       `-- dev
+|           |-- config-map.yml
+|           `-- kustomization.yml
+|-- Dockerfile
 |-- go.mod
 |-- go.sum
+|-- Makefile
 |-- pkg
 |   |-- godierr
 |   |   |-- error.go
@@ -49,23 +62,28 @@
 
 ### Developing  
 Run tests using
-```
+```shell  
 make test
 ```  
 
 To run the server, in `cmd/api/`,
-```
+```shell  
 make run
 ```
 
 Build a binary in `cmd/api` using  
-```
+```shell  
 make build
 ```  
 
 Build a Docker image  
-```  
+```shell  
 docker build -t godi .  
+```  
+
+Deploy to Kubernetes  
+```shell  
+kubectl apply -k deploy/overlay/dev  
 ```  
 
 ### Healthcheck
@@ -96,9 +114,9 @@ srv.AddMiddlewares(middleware.MyMiddlewareFunc)
 *P.S.* Middleware order matters. You can also use any middleware that matches the `http.HandlerFunc` signature     
 
 **Services**  
-To add and register a service, create a new folder under `pkg/service/<service-name>`. Make sure to export the list of routes it will use and then register them with the server instance to mount them when it starts up.    
+To add and register a service, create a new folder under `pkg/service/<service-name>` or `pkg/api/<api-name>` or `api/<api-name>`. How you wish to structure your routes and their respective controllers is upto you. Make sure to export the list of routes it will use and then register them with the server instance to mount them when it starts up.    
 ```go
-// in pkg/service/user/routes.go
+// in ../user/routes.go
 Routes := []util.Route{
   &Route{
     "createUser",
