@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: godi
+spec:
+  selector:
+    matchLabels:
+      run: godi
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: godi
+    spec:
+      containers:
+      - name: godi
+        image: riyadhalnur/godi:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 512M
+            cpu: 500m
+        ports:
+        - name: ct-port
+          containerPort: 3001
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: ct-port
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: ct-port
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        env:
+          - name: ENV
+            valueFrom:
+              configMapKeyRef:
+                name: env-config
+                key: ENV
+          - name: DEBUG
+            valueFrom:
+              configMapKeyRef:
+                name: env-config
+                key: DEBUG
+          - name: PORT
+            valueFrom:
+              configMapKeyRef:
+                name: env-config
+                key: PORT

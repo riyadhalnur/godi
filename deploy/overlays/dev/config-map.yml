@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env-config
+data:
+  ENV: "dev"
+  PORT: "3001"
+  DEBUG: "true"
