@@ -1,4 +1,4 @@
-.PHONY: test coverage
+.PHONY: test coverage build run vet
 
 test:
 	@go test -v -cover -coverprofile=cover.out ./...
