@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/riyadhalnur/godi/pkg/server/util"
+	"github.com/riyadhalnur/godi/v2/pkg/server/util"
 
 	"github.com/stretchr/testify/assert"
 )

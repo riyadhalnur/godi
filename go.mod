@@ -1,4 +1,4 @@
-module github.com/riyadhalnur/godi
+module github.com/riyadhalnur/godi/v2
 
 go 1.14
 

@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/riyadhalnur/godi/pkg/server"
+	"github.com/riyadhalnur/godi/v2/pkg/server"
 )
 
 var (
