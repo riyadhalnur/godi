@@ -60,6 +60,9 @@
     `-- index.html
 ```  
 
+### Installing  
+`go get -u github.com/riyadhalnur/godi`  
+
 ### Developing  
 Run tests using
 ```shell  

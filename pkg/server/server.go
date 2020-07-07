@@ -10,12 +10,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/godi/pkg/godierr"
+	"github.com/riyadhalnur/godi/pkg/godierr"
 
-	"github.com/godi/pkg/logger"
+	"github.com/riyadhalnur/godi/pkg/logger"
 
-	"github.com/godi/pkg/middleware"
-	"github.com/godi/pkg/server/util"
+	"github.com/riyadhalnur/godi/pkg/middleware"
+	"github.com/riyadhalnur/godi/pkg/server/util"
 
 	"github.com/gorilla/mux"
 )

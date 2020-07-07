@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/godi/pkg/server/util"
+	"github.com/riyadhalnur/godi/pkg/server/util"
 
 	"github.com/gofrs/uuid"
 )

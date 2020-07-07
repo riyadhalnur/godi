@@ -11,7 +11,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/godi/pkg/server/util"
+	"github.com/riyadhalnur/godi/pkg/server/util"
 )
 
 func TestRouteMount(t *testing.T) {
