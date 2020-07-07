@@ -61,7 +61,7 @@
 ```  
 
 ### Installing  
-`go get -u github.com/riyadhalnur/godi`  
+`go get -u github.com/riyadhalnur/godi/v2`  
 
 ### Developing  
 Run tests using
