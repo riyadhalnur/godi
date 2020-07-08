@@ -17,14 +17,14 @@ const (
 	InvalidArgMsg string = "invalid argument(s) passed in"
 )
 
-// RequiredArgsError forms standarised required arguments
+// RequiredArgsError forms standardised required arguments
 // error type. Takes a list of arguments
 func RequiredArgsError(args ...string) *Error {
 	msg := fmt.Sprintf("%s: %s", RequiredArgMsg, strings.Join(args, ", "))
 	return New(400, RequiredArgType, msg, nil)
 }
 
-// InvalidArgsError forms standarised invalid arguments
+// InvalidArgsError forms standardised invalid arguments
 // error type. Takes a list of arguments
 func InvalidArgsError(args ...string) *Error {
 	msg := fmt.Sprintf("%s: %s", InvalidArgMsg, strings.Join(args, ", "))
