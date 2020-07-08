@@ -146,7 +146,7 @@ func (s *Server) handleHTTP(handler util.APIHandlerFunc) http.HandlerFunc {
 				)
 
 				util.ErrorJSON(w, &util.ErrorResponse{
-					Code:    http.StatusInternalServerError,
+					Code:    godiErr.Code(),
 					Type:    godiErr.Type(),
 					Message: godiErr.Message(),
 				})
