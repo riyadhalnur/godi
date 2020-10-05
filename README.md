@@ -121,7 +121,7 @@ To add and register a service, create a new folder under `pkg/service/<service-n
 ```go
 // in ../user/routes.go
 Routes := []util.Route{
-  &Route{
+  util.Route{
     "createUser",
     http.MethodPost,
     "/user",

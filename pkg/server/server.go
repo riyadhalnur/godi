@@ -201,17 +201,19 @@ func (s *Server) mountRoutes() *mux.Router {
 
 	router.Use(middleware.RequestID)
 
-	// mount the health enpoint. useful for Kubernetes integration
-	router.Name("health").Path("/health").HandlerFunc(s.handleHTTP(healthCheckHandler)).Methods(http.MethodGet)
+	// mount the health enpoint. useful for Kubernetes integration among other things
+    router.Name("health").Path("/health").HandlerFunc(s.handleHTTP(healthCheckHandler)).Methods(http.MethodGet)
+
+    subrouter := router.PathPrefix("/").Subrouter().StrictSlash(true)
 
 	logger.Debug("Mounting middlewares")
 	for _, mw := range s.middlewares {
-		router.Use(mw)
+		subrouter.Use(mw)
 	}
 
 	for _, route := range s.routers {
 		logger.Debug("Mounting route", "name", route.Name, "path", route.Path, "method", route.Method)
-		router.Name(route.Name).Path(route.Path).HandlerFunc(s.handleHTTP(route.Handler)).Methods(route.Method)
+		subrouter.Name(route.Name).Path(route.Path).HandlerFunc(s.handleHTTP(route.Handler)).Methods(route.Method)
 	}
 
 	return router

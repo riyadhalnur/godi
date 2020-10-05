@@ -177,6 +177,60 @@ func TestServerResponse(t *testing.T) {
 		res, err := client.Get(r.URL + endpoint)
 		assert.Nil(t, err)
 		assert.Equal(t, http.StatusMovedPermanently, res.StatusCode)
+    })
+
+    t.Run("user middlewares are mounted on subrouter", func(t *testing.T) {
+        testMiddleware := func(next http.Handler) http.Handler {
+            return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+                w.Header().Set("Sub-Header", "sub")
+                next.ServeHTTP(w, r)
+            })
+        }
+
+		testHandler := func(ctx context.Context, req *util.Request) (*util.Response, error) {
+			return &util.Response{
+				StatusCode: http.StatusOK,
+				Headers: map[string]string{},
+			}, nil
+		}
+
+		testRoutes := []util.Route{
+			util.Route{
+				"test",
+				endpoint,
+				http.MethodGet,
+				testHandler,
+			},
+		}
+
+		srv := Server{
+			config: &Config{},
+        }
+        srv.AddMiddlewares(testMiddleware)
+		srv.AddRoutes(testRoutes...)
+		router := srv.mountRoutes()
+
+		req, err := http.NewRequest(http.MethodGet, "/health", nil)
+        if err != nil {
+            assert.Nil(t, err)
+        }
+
+        rr := httptest.NewRecorder()
+        router.ServeHTTP(rr, req)
+
+        assert.Equal(t, "", rr.Header().Get("Sub-Header"))
+        assert.Equal(t, http.StatusOK, rr.Code)
+
+        req, err = http.NewRequest(http.MethodGet, "/test", nil)
+        if err != nil {
+            assert.Nil(t, err)
+        }
+
+        rr = httptest.NewRecorder()
+        router.ServeHTTP(rr, req)
+
+        assert.Equal(t, "sub", rr.Header().Get("Sub-Header"))
+        assert.Equal(t, http.StatusOK, rr.Code)
 	})
 }
 
