@@ -202,7 +202,7 @@ func (s *Server) mountRoutes() *mux.Router {
 	router.Use(middleware.RequestID)
 
 	// mount the health enpoint. useful for Kubernetes integration among other things
-    router.Name("health").Path("/health").HandlerFunc(s.handleHTTP(healthCheckHandler)).Methods(http.MethodGet)
+    router.Name("health").Path("/health").HandlerFunc(healthCheckHandler).Methods(http.MethodGet)
 
     subrouter := router.PathPrefix("/").Subrouter().StrictSlash(true)
 
@@ -219,9 +219,8 @@ func (s *Server) mountRoutes() *mux.Router {
 	return router
 }
 
-func healthCheckHandler(ctx context.Context, req *util.Request) (*util.Response, error) {
-	return &util.Response{
-		StatusCode: http.StatusOK,
-		Body:       "ok",
-	}, nil
+func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+    w.Write([]byte("ok"))
 }
