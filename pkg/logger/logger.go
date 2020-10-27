@@ -101,7 +101,7 @@ func newZap() *zap.Logger {
 	)
 
 	return zap.New(core,
-		zap.AddCallerSkip(0), // don't skip any caller. log it all
+		zap.AddCallerSkip(1),
 		zap.AddCaller(),
 		zap.AddStacktrace(highPriority), // add stack traces for levels above >=error only
 	)
